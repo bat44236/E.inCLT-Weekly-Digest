@@ -38,12 +38,13 @@ def main():
         html_body = f.read()
 
     # If the header image exists, swap the base64 src for a CID reference
-    # so it travels as a proper inline attachment instead of a huge data URI
+    # so it travels as a proper inline attachment instead of a huge data URI.
+    # Also inject width/max-width so Outlook doesn't render it at full resolution.
     has_image = os.path.exists(IMAGE_PATH)
     if has_image:
         html_body = re.sub(
-            r'src="data:image/png;base64,[^"]+"',
-            'src="cid:header_image"',
+            r'(<img )([^>]*?)src="data:image/png;base64,[^"]+"',
+            r'\1\2src="cid:header_image" style="display:block;width:100%;max-width:800px;height:auto;margin:0 auto 20px auto;"',
             html_body,
             count=1
         )
